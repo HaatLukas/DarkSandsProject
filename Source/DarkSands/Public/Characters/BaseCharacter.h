@@ -36,6 +36,14 @@ protected:
 	void PlayHitMontage(const FName& SectionName);
 	void StopAttackMontage();
 
+	
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetTranslationWarpTarget();
+	UFUNCTION(BlueprintCallable)
+		FVector GetRotationWarpTarget();
+
+
 	virtual void Attack();
 	virtual void Die();
 	void DirectionalHitReaction(const FVector& ImpactPoint);
@@ -61,6 +69,12 @@ protected:
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		UAttributesComponent* Attributes;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+		AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		double WartTargetDistance = 75.f;
 	
 
 private:

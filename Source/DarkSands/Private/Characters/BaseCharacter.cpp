@@ -27,8 +27,10 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	if (IsAlive() && Hitter) DirectionalHitReaction(ImpactPoint);
-
+	if (IsAlive() && Hitter)
+	{
+		DirectionalHitReaction(Hitter->GetActorLocation());
+	}
 	else Die();
 
 	PlayHitSound(ImpactPoint);
@@ -88,6 +90,27 @@ void ABaseCharacter::StopAttackMontage()
 	}
 }
 
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (CombatTarget == nullptr) return FVector();
+
+	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+	 FVector TargetToMeDistance = (Location - GetActorLocation()).GetSafeNormal();
+	 TargetToMeDistance *= WartTargetDistance;
+
+	 return CombatTargetLocation + TargetToMeDistance;
+}
+
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (CombatTarget)
+	{
+		return CombatTarget->GetActorLocation();
+	}
+	return FVector();
+}
+
 void ABaseCharacter::DirectionalHitReaction(const FVector& ImpactPoint)
 {
 	const FVector Forward = GetActorForwardVector();
@@ -122,16 +145,6 @@ void ABaseCharacter::DirectionalHitReaction(const FVector& ImpactPoint)
 	}
 
 	PlayHitMontage(Section);
-	/*
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Alfa: %f"), Alfa));
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Green, FString::Printf(TEXT("Reaction: %s"), *Section.ToString()));
-	}
-
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), (GetActorLocation() + Forward * 80.f), 5.f, FColor::Blue);
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), (GetActorLocation() + ToHit * 80.f), 5.f, FColor::Red);
-	*/
 }
 
 void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint) 

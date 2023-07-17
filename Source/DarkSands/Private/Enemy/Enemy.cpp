@@ -79,7 +79,7 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 	if(!IsDead())ShowHealthBar();
 	ClearPatrolTimer();
 	ClearAttackTimer();
-	//SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	StopAttackMontage();
 }
 

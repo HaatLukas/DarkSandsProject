@@ -58,8 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		double AttackRadius = 165.f;
 
-	UPROPERTY(BlueprintReadOnly, Category="Combat")
-		AActor* CombatTarget;
+	
 
 	UPROPERTY( EditAnywhere, Category = "Combat")
 		float AttackMin = 0.5f;
