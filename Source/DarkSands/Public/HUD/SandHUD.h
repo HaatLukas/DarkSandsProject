@@ -20,5 +20,7 @@ private:
 		TSubclassOf<class USandOverlay> SandOverlayClass;
 
 	UPROPERTY()
-	USandOverlay* SandOverlay;
+		USandOverlay* SandOverlay;
+public:
+	FORCEINLINE USandOverlay* GetSandOverlay() const {return SandOverlay;}
 };

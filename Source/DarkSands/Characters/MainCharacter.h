@@ -14,7 +14,7 @@ class UInputMappingContext;
 class UInputAction;
 class AItem;
 class UAnimMontage;
-
+class USandOverlay;
 
 UCLASS()
 class DARKSANDS_API AMainCharacter : public ABaseCharacter
@@ -26,13 +26,18 @@ public:
 	AMainCharacter();
 	//virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void Jump();
+	virtual void Jump() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	
 
 
 protected:
 	
 	virtual void BeginPlay() override;
+
+	void InitializeMappingContextForSand();
+	void InitializeSandOverlay();
 
 	/* Callbacks for input*/
 
@@ -98,6 +103,11 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		EActionState ActionState = EActionState::EAS_Unoccupied;
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
+
+	UPROPERTY(EditAnywhere)
+		USandOverlay* SandOverlay;
+
+	void SetHUDHealth();
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }

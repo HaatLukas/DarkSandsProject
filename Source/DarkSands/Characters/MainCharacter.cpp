@@ -5,6 +5,7 @@
 
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameComponents/AttributesComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,6 +13,9 @@
 #include "Camera/CameraComponent.h"
 #include "Item.h"
 #include "Animation/AnimMontage.h"
+#include "HUD/SandHUD.h"
+#include "HUD/SandOverlay.h"
+
 
 
 AMainCharacter::AMainCharacter()
@@ -45,16 +49,46 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(SlashContext, 0);
-		}
-	}
+	InitializeSandOverlay();
+
+	InitializeMappingContextForSand();
 
 	Tags.Add(FName("MainCharacter"));
 	
+}
+
+void AMainCharacter::InitializeMappingContextForSand()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(SlashContext, 0);
+	}
+
+	}
+}
+
+void AMainCharacter::InitializeSandOverlay()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		ASandHUD* SandHUD = Cast<ASandHUD>(PlayerController->GetHUD());
+		if (SandHUD)
+		{
+			SandOverlay = SandHUD->GetSandOverlay();
+			if (SandOverlay && Attributes)
+			{
+				SandOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+				SandOverlay->SetStaminaBarPercent(1.f);
+				SandOverlay->SetStaminaBarPercent(1.f);
+				SandOverlay->SetGold(0);
+				SandOverlay->SetSouls(0);
+
+			}
+		}
+
+	}
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)
@@ -212,12 +246,26 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AMainCharacter::Jump()
 {
-	Super::Jump();
+	if (ActionState == EActionState::EAS_Unoccupied)
+	{
+		Super::Jump();
+	}
+	
 }
 
 float AMainCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
+	SetHUDHealth();
+
 	return DamageAmount;
+}
+
+void AMainCharacter::SetHUDHealth()
+{
+	if (SandOverlay)
+	{
+		SandOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+	}
 }
 
